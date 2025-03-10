@@ -2,15 +2,13 @@ package com.smartspending.user.entity;
 
 import com.smartspending.common.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(name = "users")
 public class User extends BaseEntity {
 
     @Id
@@ -29,4 +27,12 @@ public class User extends BaseEntity {
 
     @Column(name = "email_verified")
     private boolean emailVerified;
+
+    @Builder
+    public User(String email, String password, String name, Boolean emailVerified) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.emailVerified = emailVerified;
+    }
 }

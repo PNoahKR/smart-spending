@@ -1,7 +1,7 @@
 package com.smartspending.user.service;
 
-import com.smartspending.user.entity.User;
+import com.smartspending.user.dto.request.RegisterRequestDto;
 
 public interface UserService {
-    Long create(User user);
+    Long registerUser(RegisterRequestDto requestDto);
 }
