@@ -10,12 +10,12 @@
 **사용자 인증 및 권한**
 
 - 회원가입, 로그인(OAuth2 / JWT 기반)
-- 비밀번호 암호화 및 보안 → 암호화 방식? 보안설계?
+- 비밀번호 암호화 및 보안
 
 **수입/지출 관리**
 
 - 수입/지출 항목 추가, 수정, 삭제
-- 카테고리별 관리 → 카테고리 분류?
+- 카테고리별 관리
 
 **예산 설정**
 
@@ -105,8 +105,8 @@
 
 ## 🛠️ 기술 스택
 - **백엔드**: Spring Boot, JPA, Hibernate
-- **데이터베이스**: MySQL (또는 PostgreSQL)
-- **프론트엔드**: React.js 또는 Thymeleaf (초기 MVP는 Thymeleaf로 간단히 시작 가능)
+- **데이터베이스**: MySQL 또는 PostgreSQL
+- **프론트엔드**: React.js 또는 Thymeleaf
 - **인증/보안**: Spring Security, OAuth2, JWT
-- **캐싱**: Redis (예산 초과 알림 등 빠른 처리 필요 시)
-- **배포**: Docker, Kubernetes (확장성을 고려), AWS (EC2, RDS)
+- **캐싱**: Redis
+- **배포**: Docker, Kubernetes, AWS (EC2, RDS)
