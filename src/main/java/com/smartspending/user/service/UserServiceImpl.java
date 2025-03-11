@@ -1,5 +1,8 @@
 package com.smartspending.user.service;
 
+import com.smartspending.common.exception.CommonResponseCode;
+import com.smartspending.common.exception.CustomException;
+import com.smartspending.user.dto.request.LoginRequestDto;
 import com.smartspending.user.dto.request.RegisterRequestDto;
 import com.smartspending.user.entity.User;
 import com.smartspending.user.repository.UserRepository;
@@ -23,6 +26,18 @@ public class UserServiceImpl implements UserService {
                 .emailVerified(requestDto.isEmailVerified())
                 .build();
         userRepository.save(user);
+        return user.getId();
+    }
+
+    @Override
+    public Long login(LoginRequestDto requestDto) {
+        User user = userRepository.findByEmail(requestDto.getEmail());
+        if (user == null) {
+            throw new CustomException(CommonResponseCode.USER_NOT_FOUND);
+        }
+        if (!user.getPassword().equals(requestDto.getPassword())) {
+            throw new CustomException(CommonResponseCode.USER_NOT_FOUND);
+        }
         return user.getId();
     }
 }
