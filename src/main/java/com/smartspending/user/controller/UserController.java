@@ -4,12 +4,12 @@ import com.smartspending.common.response.CommonResponse;
 import com.smartspending.common.util.ApiResponseUtil;
 import com.smartspending.user.dto.request.LoginRequestDto;
 import com.smartspending.user.dto.request.RegisterRequestDto;
+import com.smartspending.user.dto.request.RequestTokenDto;
+import com.smartspending.user.dto.response.LoginResponseDto;
 import com.smartspending.user.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,7 +23,23 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public CommonResponse<Long> login(@RequestBody LoginRequestDto loginRequestDto) {
+    public CommonResponse<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
         return ApiResponseUtil.success(userService.login(loginRequestDto));
+    }
+
+    @PostMapping("/reissue")
+    public CommonResponse<LoginResponseDto> reissue(@RequestBody RequestTokenDto requestTokenDto) {
+        return ApiResponseUtil.success(userService.reCreateAccessToken(requestTokenDto));
+    }
+
+    @PostMapping("/logout")
+    public CommonResponse<Void> logout(HttpServletRequest request) {
+        userService.logout(request);
+        return ApiResponseUtil.success();
+    }
+
+    @GetMapping("/test")
+    public String test() {
+        return "성공";
     }
 }
