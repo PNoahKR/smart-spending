@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
-public class RefreshTokenService {
+public class RedisService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -36,5 +36,17 @@ public class RefreshTokenService {
     public boolean checkBlackList(String token) {
         String storedRefreshToken = (String) redisTemplate.opsForValue().get("blackList: " + token);
         return storedRefreshToken != null && storedRefreshToken.equals(token);
+    }
+
+    public void saveVerificationCode(String email, String code) {
+        redisTemplate.opsForValue().set("emailVerificationCode: " + email, code, 5, TimeUnit.MINUTES);
+    }
+
+    public String getVerificationCode(String email) {
+        return (String) redisTemplate.opsForValue().get("emailVerificationCode: " + email);
+    }
+
+    public void removeVerificationCode(String email) {
+        redisTemplate.delete( "emailVerificationCode: " + email );
     }
 }
