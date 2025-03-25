@@ -1,6 +1,6 @@
 package com.smartspending.common.jwt;
 
-import com.smartspending.common.redis.RefreshTokenService;
+import com.smartspending.common.redis.RedisService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +21,7 @@ import java.util.Collections;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenService refreshTokenService;
+    private final RedisService redisService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -35,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = authHeader.substring(7);
 
-        if (refreshTokenService.checkBlackList(token)) {
+        if (redisService.checkBlackList(token)) {
             log.debug("JWT token is blacklisted");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;

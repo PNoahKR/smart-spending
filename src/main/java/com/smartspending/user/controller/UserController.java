@@ -2,8 +2,9 @@ package com.smartspending.user.controller;
 
 import com.smartspending.common.response.CommonResponse;
 import com.smartspending.common.util.ApiResponseUtil;
+import com.smartspending.user.dto.request.CompleteRegisterRequestDto;
 import com.smartspending.user.dto.request.LoginRequestDto;
-import com.smartspending.user.dto.request.RegisterRequestDto;
+import com.smartspending.user.dto.request.EmailVerifyRequestDto;
 import com.smartspending.user.dto.request.RequestTokenDto;
 import com.smartspending.user.dto.response.LoginResponseDto;
 import com.smartspending.user.service.UserService;
@@ -18,9 +19,17 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public CommonResponse<Long> register(@RequestBody RegisterRequestDto registerRequestDto) {
-        return ApiResponseUtil.success(userService.registerUser(registerRequestDto));
+    public CommonResponse<Void> register(@RequestBody EmailVerifyRequestDto emailVerifyRequestDto) {
+        userService.verifyUserEmail(emailVerifyRequestDto);
+        return ApiResponseUtil.success();
     }
+
+    @PostMapping("/register-verified")
+    public CommonResponse<Long> registerVerifyEmail(@RequestBody CompleteRegisterRequestDto completeRegisterRequestDto) {
+        return ApiResponseUtil.success(userService.CompleteUserRegister(completeRegisterRequestDto));
+    }
+
+
 
     @PostMapping("/login")
     public CommonResponse<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {

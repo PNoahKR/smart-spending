@@ -2,7 +2,7 @@ package com.smartspending.common.config;
 
 import com.smartspending.common.jwt.JwtAuthenticationFilter;
 import com.smartspending.common.jwt.JwtTokenProvider;
-import com.smartspending.common.redis.RefreshTokenService;
+import com.smartspending.common.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +26,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenService refreshTokenService;
+    private final RedisService redisService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -57,11 +57,11 @@ public class SecurityConfig {
                 .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // session 비활
                 .headers((headersConfig) ->
                         headersConfig.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) // X-Frame-Options 헤더를 비활성화
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, refreshTokenService), UsernamePasswordAuthenticationFilter.class) // jwt 필터 등록 인증방식
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisService), UsernamePasswordAuthenticationFilter.class) // jwt 필터 등록 인증방식
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers(PathRequest.toH2Console()).permitAll()
-                                .requestMatchers("/", "/user/login/**", "/user/logout/**", "/user/register/**").permitAll()
+                                .requestMatchers("/", "/user/login/**", "/user/logout/**", "/user/register/**", "/user/register-verified/**").permitAll()
                                 .anyRequest().authenticated()
                 );
         return http.build();
