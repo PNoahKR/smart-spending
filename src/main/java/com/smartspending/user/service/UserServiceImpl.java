@@ -3,9 +3,10 @@ package com.smartspending.user.service;
 import com.smartspending.common.exception.CommonResponseCode;
 import com.smartspending.common.exception.CustomException;
 import com.smartspending.common.jwt.JwtTokenProvider;
-import com.smartspending.common.redis.RefreshTokenService;
+import com.smartspending.common.redis.RedisService;
+import com.smartspending.user.dto.request.CompleteRegisterRequestDto;
 import com.smartspending.user.dto.request.LoginRequestDto;
-import com.smartspending.user.dto.request.RegisterRequestDto;
+import com.smartspending.user.dto.request.EmailVerifyRequestDto;
 import com.smartspending.user.dto.request.RequestTokenDto;
 import com.smartspending.user.dto.response.LoginResponseDto;
 import com.smartspending.user.entity.User;
@@ -25,20 +26,40 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenService refreshTokenService;
+    private final RedisService redisService;
+    private final MailService mailService;
 
     @Override
     @Transactional
-    public Long registerUser(RegisterRequestDto requestDto) {
+    public void verifyUserEmail(EmailVerifyRequestDto requestDto) {
         validateEmail(requestDto.getEmail());
+        String code = mailService.verifyCode();
+        redisService.removeVerificationCode(requestDto.getEmail()); // 이전 실패 경험 데이터 삭제
+        redisService.saveVerificationCode(requestDto.getEmail(), code);
+
+        mailService.sendVerificationEmail(requestDto.getEmail(), code);
+    }
+
+    @Override
+    @Transactional
+    public Long CompleteUserRegister(CompleteRegisterRequestDto requestDto) {
+        String code = redisService.getVerificationCode(requestDto.getEmail());
+        if (code == null || !code.equals(requestDto.getVerificationCode())) {
+            throw new CustomException(CommonResponseCode.EMAIL_NOT_VERIFIED);
+        }
+
         String encodePassword = passwordEncoder.encode(requestDto.getPassword());
+
         User user = User.builder()
                 .email(requestDto.getEmail())
                 .password(encodePassword)
                 .name(requestDto.getName())
-                .emailVerified(requestDto.isEmailVerified())
+                .emailVerified(true)
                 .build();
         userRepository.save(user);
+
+        redisService.removeVerificationCode(requestDto.getEmail());
+
         return user.getId();
     }
 
@@ -54,7 +75,7 @@ public class UserServiceImpl implements UserService {
         String accessToken = jwtTokenProvider.createAccessToken(user.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
 
-        refreshTokenService.saveRefreshToken(user.getId(), refreshToken);
+        redisService.saveRefreshToken(user.getId(), refreshToken);
 
         return new LoginResponseDto(accessToken, refreshToken);
     }
@@ -64,11 +85,11 @@ public class UserServiceImpl implements UserService {
 
         Long userId = jwtTokenProvider.getUserIdFromToken(requestDto.getAccessToken());
 
-        if(!refreshTokenService.checkRefreshToken(userId, requestDto.getRefreshToken())) {
+        if(!redisService.checkRefreshToken(userId, requestDto.getRefreshToken())) {
             throw new CustomException(CommonResponseCode.UNAUTHORIZED_USER);
         }
 
-        String refreshToken = refreshTokenService.getRefreshToken(userId);
+        String refreshToken = redisService.getRefreshToken(userId);
 
         if (!refreshToken.equals(requestDto.getRefreshToken())) {
             throw new CustomException(CommonResponseCode.UNAUTHORIZED_USER);
@@ -86,8 +107,8 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(CommonResponseCode.UNAUTHORIZED_USER);
         }
         Long userId = jwtTokenProvider.getUserIdFromToken(accessToken);
-        refreshTokenService.removeRefreshToken(userId);
-        refreshTokenService.setBlackList(accessToken);
+        redisService.removeRefreshToken(userId);
+        redisService.setBlackList(accessToken);
     }
 
     private void validateEmail(@NotBlank(message = "이메일을 입력해주세요") @Email(message = "올바른 형식이 아닙니다") String email) {
