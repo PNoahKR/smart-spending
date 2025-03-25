@@ -11,7 +11,7 @@ public interface UserService {
 
     void verifyUserEmail(EmailVerifyRequestDto requestDto);
 
-    Long CompleteUserRegister(CompleteRegisterRequestDto requestDto);
+    Long completeUserRegister(CompleteRegisterRequestDto requestDto);
 
     LoginResponseDto login(LoginRequestDto requestDto);
 

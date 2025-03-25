@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Long CompleteUserRegister(CompleteRegisterRequestDto requestDto) {
+    public Long completeUserRegister(CompleteRegisterRequestDto requestDto) {
         String code = redisService.getVerificationCode(requestDto.getEmail());
         if (code == null || !code.equals(requestDto.getVerificationCode())) {
             throw new CustomException(CommonResponseCode.EMAIL_NOT_VERIFIED);

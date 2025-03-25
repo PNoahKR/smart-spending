@@ -33,8 +33,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: qkrwldn0818@gmail.com
-    password: zkoxlojfsbemspgc
+    username:
+    password:
     protocol: smtp
     properties:
       mail:
@@ -45,6 +45,6 @@ spring:
 
 jwt:
   secret:
-    key: 64K07ZSE66Gc7KCd7Yq464qU66ek7Jqw67OE66Gc64uk6re465+s64uI6re464Ol64SI7J2Y64+I7J2E7JWE6ru07I2o65287KCc67Cc
+    key:
   access-token-expire-time: 10800000 # 3시간
   refresh-token-expire-time: 86400000 # 1일

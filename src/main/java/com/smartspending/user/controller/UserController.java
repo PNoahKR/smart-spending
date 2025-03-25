@@ -26,10 +26,8 @@ public class UserController {
 
     @PostMapping("/register-verified")
     public CommonResponse<Long> registerVerifyEmail(@RequestBody CompleteRegisterRequestDto completeRegisterRequestDto) {
-        return ApiResponseUtil.success(userService.CompleteUserRegister(completeRegisterRequestDto));
+        return ApiResponseUtil.success(userService.completeUserRegister(completeRegisterRequestDto));
     }
-
-
 
     @PostMapping("/login")
     public CommonResponse<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
