@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            padding-right: 40px; /* 오른쪽 여백을 추가하여 체크 아이콘 공간 확보 */
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            outline: none;
+            font-size: 16px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .input-group button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+            white-space: nowrap; /* 줄바꿈 방지 */
+        }
+        .input-group button:hover {
+            background-color: #1d4ed8;
+        }
+        .input-group button:disabled {
+            background-color: #e5e7eb;
+            cursor: not-allowed;
+        }
+        .signup-button {
+            width: 100%;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .signup-button:hover {
+            background-color: #1d4ed8;
+        }
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+        .gray-block {
+            background-color: #e5e7eb;
+            padding: 10px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>Sign Up</h2>
+
+    <!-- Email Input -->
+    <div class="input-group" id="email-group">
+        <input type="email" id="email" placeholder="Enter your email" oninput="resetEmailCheck()">
+        <button id="check-email-btn" onclick="checkEmail()">이메일 확인</button>
+    </div>
+
+    <!-- Verification Code Input -->
+    <div class="input-group" id="code-group">
+        <input type="text" id="verification-code" placeholder="Enter verification code">
+        <button id="send-code-btn" onclick="sendVerificationCode()">인증코드 보내기</button>
+        <button id="verify-btn" onclick="verifyCode()">인증코드 확인</button>
+    </div>
+
+    <!-- Password Input -->
+    <div class="input-group">
+        <input type="password" id="password" placeholder="Enter your password">
+        <span class="password-toggle" onclick="togglePasswordVisibility()">👁️</span>
+    </div>
+
+    <!-- Name Input -->
+    <div class="input-group">
+        <input type="text" id="name" placeholder="Enter your name">
+    </div>
+
+    <!-- Signup Button -->
+    <button class="signup-button" onclick="signup()">회원가입</button>
+</div>
+
+<script>
+    function checkEmail() {
+        const email = document.getElementById('email').value;
+        const emailButton = document.getElementById('check-email-btn');
+
+        if (email.includes('@')) {
+            emailButton.disabled = true;
+            emailButton.style.backgroundColor = '#e5e7eb'; // 회색 버튼으로 변경
+            alert('이메일 확인 완료!');
+        } else {
+            alert('유효한 이메일을 입력해주세요.');
+        }
+    }
+
+    function resetEmailCheck() {
+        const emailButton = document.getElementById('check-email-btn');
+        emailButton.disabled = false;
+        emailButton.style.backgroundColor = '#2563eb'; // 버튼 활성화 상태로 변경
+    }
+
+    function sendVerificationCode() {
+        alert('인증코드가 이메일로 전송되었습니다!');
+    }
+
+    function verifyCode() {
+        const code = document.getElementById('verification-code').value;
+        const sendCodeButton = document.getElementById('send-code-btn'); // 인증코드 보내기 버튼
+        const verifyButton = document.querySelector('#code-group button:nth-child(2)');// 인증코드 확인 버튼
+        const btn = document.getElementById('verify-btn');
+
+        if (code === '123456') { // 실제 인증번호와 비교하여 처리
+            verifyButton.disabled = true; // 인증코드 확인 버튼 비활성화
+            btn.disabled = true;
+            document.getElementById('verification-code').disabled = true; // 인증코드 입력란 비활성화
+            sendCodeButton.disabled = true; // 인증코드 보내기 버튼 비활성화
+            alert('인증 성공!');
+        } else {
+            alert('인증코드가 잘못되었습니다.');
+        }
+    }
+
+    function togglePasswordVisibility() {
+        const passwordInput = document.getElementById('password');
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+        } else {
+            passwordInput.type = 'password';
+        }
+    }
+
+    function signup() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const name = document.getElementById('name').value;
+
+        if (email && password && name) {
+            alert(`회원가입 성공!\n이메일: ${email}\n이름: ${name}`);
+        } else {
+            alert('모든 항목을 입력해주세요.');
+        }
+    }
+</script>
+</body>
+</html>

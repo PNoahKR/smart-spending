@@ -4,9 +4,8 @@ import com.smartspending.common.exception.CommonResponseCode;
 import com.smartspending.common.exception.CustomException;
 import com.smartspending.common.jwt.JwtTokenProvider;
 import com.smartspending.common.redis.RedisService;
-import com.smartspending.user.dto.request.CompleteRegisterRequestDto;
 import com.smartspending.user.dto.request.LoginRequestDto;
-import com.smartspending.user.dto.request.EmailVerifyRequestDto;
+import com.smartspending.user.dto.request.RegisterRequestDto;
 import com.smartspending.user.dto.request.RequestTokenDto;
 import com.smartspending.user.dto.response.LoginResponseDto;
 import com.smartspending.user.entity.User;
@@ -30,24 +29,37 @@ public class UserServiceImpl implements UserService {
     private final MailService mailService;
 
     @Override
-    @Transactional
-    public void verifyUserEmail(EmailVerifyRequestDto requestDto) {
-        validateEmail(requestDto.getEmail());
-        String code = mailService.verifyCode();
-        redisService.removeVerificationCode(requestDto.getEmail()); // 이전 실패 경험 데이터 삭제
-        redisService.saveVerificationCode(requestDto.getEmail(), code);
-
-        mailService.sendVerificationEmail(requestDto.getEmail(), code);
+    public boolean duplicateEmail(String email) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            return false;
+        } else {
+            validateEmail(email);
+            return true;
+        }
     }
 
     @Override
-    @Transactional
-    public Long completeUserRegister(CompleteRegisterRequestDto requestDto) {
-        String code = redisService.getVerificationCode(requestDto.getEmail());
-        if (code == null || !code.equals(requestDto.getVerificationCode())) {
-            throw new CustomException(CommonResponseCode.EMAIL_NOT_VERIFIED);
-        }
+    public void sendVerificationCode(String email) {
+        String code = mailService.verifyCode();
+        redisService.removeVerificationCode(email); // 이전 실패 경험 데이터 삭제
+        redisService.saveVerificationCode(email, code);
 
+        mailService.sendVerificationEmail(email, code);
+    }
+
+    @Override
+    public boolean verifyEmail(String email, String verificationCode) {
+        String code = redisService.getVerificationCode(email);
+        if (code == null || !code.equals(verificationCode)) {
+            throw new CustomException(CommonResponseCode.EMAIL_NOT_VERIFIED);
+        } else {
+            redisService.removeVerificationCode(email);
+            return true;
+        }
+    }
+
+    @Override
+    public Long register(RegisterRequestDto requestDto) {
         String encodePassword = passwordEncoder.encode(requestDto.getPassword());
 
         User user = User.builder()
@@ -57,9 +69,6 @@ public class UserServiceImpl implements UserService {
                 .emailVerified(true)
                 .build();
         userRepository.save(user);
-
-        redisService.removeVerificationCode(requestDto.getEmail());
-
         return user.getId();
     }
 

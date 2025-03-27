@@ -1,17 +1,20 @@
 package com.smartspending.user.service;
 
-import com.smartspending.user.dto.request.CompleteRegisterRequestDto;
 import com.smartspending.user.dto.request.LoginRequestDto;
-import com.smartspending.user.dto.request.EmailVerifyRequestDto;
+import com.smartspending.user.dto.request.RegisterRequestDto;
 import com.smartspending.user.dto.request.RequestTokenDto;
 import com.smartspending.user.dto.response.LoginResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 
 public interface UserService {
 
-    void verifyUserEmail(EmailVerifyRequestDto requestDto);
+    boolean duplicateEmail(String email);
 
-    Long completeUserRegister(CompleteRegisterRequestDto requestDto);
+    void sendVerificationCode(String email);
+
+    boolean verifyEmail(String email, String verificationCode);
+
+    Long register(RegisterRequestDto requestDto);
 
     LoginResponseDto login(LoginRequestDto requestDto);
 
