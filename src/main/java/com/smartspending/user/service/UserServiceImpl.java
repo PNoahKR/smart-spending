@@ -72,8 +72,8 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(CommonResponseCode.USER_NOT_FOUND);
         }
 
-        String accessToken = jwtTokenProvider.createAccessToken(user.getId());
-        String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
+        String accessToken = jwtTokenProvider.createAccessToken(user.getId(), user.getEmail());
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(), user.getEmail());
 
         redisService.saveRefreshToken(user.getId(), refreshToken);
 
@@ -84,6 +84,7 @@ public class UserServiceImpl implements UserService {
     public LoginResponseDto reCreateAccessToken(RequestTokenDto requestDto) {
 
         Long userId = jwtTokenProvider.getUserIdFromToken(requestDto.getAccessToken());
+        String email = jwtTokenProvider.getEmailFromToken(requestDto.getAccessToken());
 
         if(!redisService.checkRefreshToken(userId, requestDto.getRefreshToken())) {
             throw new CustomException(CommonResponseCode.UNAUTHORIZED_USER);
@@ -95,7 +96,7 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(CommonResponseCode.UNAUTHORIZED_USER);
         }
 
-        String accessToken = jwtTokenProvider.createAccessToken(userId);
+        String accessToken = jwtTokenProvider.createAccessToken(userId, email);
 
         return new LoginResponseDto(accessToken, refreshToken);
     }

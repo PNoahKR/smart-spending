@@ -37,20 +37,22 @@ public class JwtTokenProvider {
         key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createAccessToken(Long userId) {
+    public String createAccessToken(Long userId, String email) {
         Date now = new Date();
         return Jwts.builder()
-                .setSubject(String.valueOf(userId))
+                .setSubject(email)
+                .setId(String.valueOf(userId))
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + accessExpirationTime))
                 .signWith(key, signatureAlgorithm)
                 .compact();
     }
 
-    public String createRefreshToken(Long userId) {
+    public String createRefreshToken(Long userId, String email) {
         Date now = new Date();
         return Jwts.builder()
-                .setSubject(String.valueOf(userId))
+                .setSubject(email)
+                .setId(String.valueOf(userId))
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + refreshExpirationTime))
                 .signWith(key, signatureAlgorithm)
@@ -80,6 +82,15 @@ public class JwtTokenProvider {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return Long.valueOf(claims.getSubject());
+        return Long.valueOf(claims.getId());
+    }
+
+    public String getEmailFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
     }
 }
