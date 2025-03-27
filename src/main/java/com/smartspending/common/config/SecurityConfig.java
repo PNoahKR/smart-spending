@@ -66,9 +66,7 @@ public class SecurityConfig {
                                         "/user/login/**",
                                         "/user/logout/**",
                                         "/user/register/**",
-                                        "/user/register/check-email/**",
-                                        "/user/register/send-code/**",
-                                        "/user/register/verify-code/**").permitAll()
+                                        "/user/findPassword/**").permitAll()
                                 .anyRequest().authenticated()
                 );
         return http.build();

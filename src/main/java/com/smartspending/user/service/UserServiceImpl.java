@@ -4,9 +4,7 @@ import com.smartspending.common.exception.CommonResponseCode;
 import com.smartspending.common.exception.CustomException;
 import com.smartspending.common.jwt.JwtTokenProvider;
 import com.smartspending.common.redis.RedisService;
-import com.smartspending.user.dto.request.LoginRequestDto;
-import com.smartspending.user.dto.request.RegisterRequestDto;
-import com.smartspending.user.dto.request.RequestTokenDto;
+import com.smartspending.user.dto.request.*;
 import com.smartspending.user.dto.response.LoginResponseDto;
 import com.smartspending.user.entity.User;
 import com.smartspending.user.repository.UserRepository;
@@ -48,17 +46,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean verifyEmail(String email, String verificationCode) {
-        String code = redisService.getVerificationCode(email);
-        if (code == null || !code.equals(verificationCode)) {
+    public boolean verifyEmail(VerifyCodeRequestDto requestDto) {
+        String verificationCode = redisService.getVerificationCode(requestDto.getEmail());
+        if (verificationCode == null || !verificationCode.equals(requestDto.getCode())) {
             throw new CustomException(CommonResponseCode.EMAIL_NOT_VERIFIED);
         } else {
-            redisService.removeVerificationCode(email);
+            redisService.removeVerificationCode(requestDto.getEmail());
             return true;
         }
     }
 
     @Override
+    @Transactional
     public Long register(RegisterRequestDto requestDto) {
         String encodePassword = passwordEncoder.encode(requestDto.getPassword());
 
@@ -87,6 +86,20 @@ public class UserServiceImpl implements UserService {
         redisService.saveRefreshToken(user.getId(), refreshToken);
 
         return new LoginResponseDto(accessToken, refreshToken);
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(ResetPasswordDto requestDto) {
+        String newPassword = requestDto.getNewPassword();
+        String confirmPassword = requestDto.getConfirmPassword();
+        if (!newPassword.equals(confirmPassword)) {
+            throw new CustomException(CommonResponseCode.PASSWORD_MISMATCH);
+        }
+        String encodePassword = passwordEncoder.encode(requestDto.getNewPassword());
+        User user = userRepository.findByEmail(requestDto.getEmail())
+                .orElseThrow(() -> new CustomException(CommonResponseCode.USER_NOT_FOUND));
+        user.updatePassword(encodePassword);
     }
 
     @Override

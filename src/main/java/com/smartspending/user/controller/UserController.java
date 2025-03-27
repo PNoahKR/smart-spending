@@ -2,9 +2,7 @@ package com.smartspending.user.controller;
 
 import com.smartspending.common.response.CommonResponse;
 import com.smartspending.common.util.ApiResponseUtil;
-import com.smartspending.user.dto.request.LoginRequestDto;
-import com.smartspending.user.dto.request.RegisterRequestDto;
-import com.smartspending.user.dto.request.RequestTokenDto;
+import com.smartspending.user.dto.request.*;
 import com.smartspending.user.dto.response.LoginResponseDto;
 import com.smartspending.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,9 +28,8 @@ public class UserController {
     }
 
     @PostMapping("/register/verify-code")
-    public CommonResponse<Boolean> verifyCode(@RequestParam String email,
-                                              @RequestParam String code) {
-        return ApiResponseUtil.success(userService.verifyEmail(email, code));
+    public CommonResponse<Boolean> verifyCode(@RequestBody VerifyCodeRequestDto verifyCodeRequestDto) {
+        return ApiResponseUtil.success(userService.verifyEmail(verifyCodeRequestDto));
     }
 
     @PostMapping("/register")
@@ -43,6 +40,23 @@ public class UserController {
     @PostMapping("/login")
     public CommonResponse<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
         return ApiResponseUtil.success(userService.login(loginRequestDto));
+    }
+
+    @PostMapping("/findPassword/send-code")
+    public CommonResponse<Void> sendPasswordResetCode(@RequestParam String email) {
+        userService.sendVerificationCode(email);
+        return ApiResponseUtil.success();
+    }
+
+    @PostMapping("/findPassword/verify-code")
+    public CommonResponse<Boolean> verifyPasswordResetCode(@RequestBody VerifyCodeRequestDto verifyCodeRequestDto) {
+        return ApiResponseUtil.success(userService.verifyEmail(verifyCodeRequestDto));
+    }
+
+    @PostMapping("/findPassword")
+    public CommonResponse<Void> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+        userService.resetPassword(resetPasswordDto);
+        return ApiResponseUtil.success();
     }
 
     @PostMapping("/reissue")

@@ -35,4 +35,8 @@ public class User extends BaseEntity {
         this.name = name;
         this.emailVerified = emailVerified;
     }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }
