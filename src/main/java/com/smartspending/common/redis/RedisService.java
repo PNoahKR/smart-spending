@@ -20,8 +20,8 @@ public class RedisService {
         return (String) redisTemplate.opsForValue().get("refreshToken: " + userId);
     }
 
-    public void setBlackList(String token) {
-        redisTemplate.opsForSet().add("blackList: " + token, token);
+    public void setBlackList(String token, String expiration) {
+        redisTemplate.opsForSet().add("blackList: " + token, token, expiration);
     }
 
     public void removeRefreshToken(Long userId) {

@@ -2,10 +2,7 @@ package com.smartspending.user.controller;
 
 import com.smartspending.common.response.CommonResponse;
 import com.smartspending.common.util.ApiResponseUtil;
-import com.smartspending.user.dto.request.CompleteRegisterRequestDto;
-import com.smartspending.user.dto.request.LoginRequestDto;
-import com.smartspending.user.dto.request.EmailVerifyRequestDto;
-import com.smartspending.user.dto.request.RequestTokenDto;
+import com.smartspending.user.dto.request.*;
 import com.smartspending.user.dto.response.LoginResponseDto;
 import com.smartspending.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,22 +13,50 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
+
     private final UserService userService;
 
-    @PostMapping("/register")
-    public CommonResponse<Void> register(@RequestBody EmailVerifyRequestDto emailVerifyRequestDto) {
-        userService.verifyUserEmail(emailVerifyRequestDto);
+    @GetMapping("/register/check-email")
+    public CommonResponse<Boolean> checkEmail(@RequestParam String email) {
+        return ApiResponseUtil.success(userService.duplicateEmail(email));
+    }
+
+    @PostMapping("/register/send-code")
+    public CommonResponse<Void> sendCode(@RequestParam String email) {
+        userService.sendVerificationCode(email);
         return ApiResponseUtil.success();
     }
 
-    @PostMapping("/register-verified")
-    public CommonResponse<Long> registerVerifyEmail(@RequestBody CompleteRegisterRequestDto completeRegisterRequestDto) {
-        return ApiResponseUtil.success(userService.completeUserRegister(completeRegisterRequestDto));
+    @PostMapping("/register/verify-code")
+    public CommonResponse<Boolean> verifyCode(@RequestBody VerifyCodeRequestDto verifyCodeRequestDto) {
+        return ApiResponseUtil.success(userService.verifyEmail(verifyCodeRequestDto));
+    }
+
+    @PostMapping("/register")
+    public CommonResponse<Long> register(@RequestBody RegisterRequestDto registerRequestDto) {
+        return ApiResponseUtil.success(userService.register(registerRequestDto));
     }
 
     @PostMapping("/login")
     public CommonResponse<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
         return ApiResponseUtil.success(userService.login(loginRequestDto));
+    }
+
+    @PostMapping("/findPassword/send-code")
+    public CommonResponse<Void> sendPasswordResetCode(@RequestParam String email) {
+        userService.sendVerificationCode(email);
+        return ApiResponseUtil.success();
+    }
+
+    @PostMapping("/findPassword/verify-code")
+    public CommonResponse<Boolean> verifyPasswordResetCode(@RequestBody VerifyCodeRequestDto verifyCodeRequestDto) {
+        return ApiResponseUtil.success(userService.verifyEmail(verifyCodeRequestDto));
+    }
+
+    @PostMapping("/findPassword")
+    public CommonResponse<Void> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+        userService.resetPassword(resetPasswordDto);
+        return ApiResponseUtil.success();
     }
 
     @PostMapping("/reissue")
