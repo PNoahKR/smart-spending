@@ -131,7 +131,8 @@ public class UserServiceImpl implements UserService {
         }
         Long userId = jwtTokenProvider.getUserIdFromToken(accessToken);
         redisService.removeRefreshToken(userId);
-        redisService.setBlackList(accessToken);
+        String expirationTime = jwtTokenProvider.getExpirationTime(accessToken);
+        redisService.setBlackList(accessToken, expirationTime);
     }
 
     private void validateEmail(@NotBlank(message = "이메일을 입력해주세요") @Email(message = "올바른 형식이 아닙니다") String email) {

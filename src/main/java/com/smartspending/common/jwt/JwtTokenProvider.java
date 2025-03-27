@@ -93,4 +93,16 @@ public class JwtTokenProvider {
                 .getBody();
         return claims.getSubject();
     }
+
+    public String getExpirationTime(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        long expiration = claims.getExpiration().getTime(); // 만료 시간 (밀리초)
+        long currentTime = System.currentTimeMillis(); // 현재 시간 (밀리초)
+        return String.valueOf(expiration - currentTime); // 남은 유효 시간
+    }
 }
