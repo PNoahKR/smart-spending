@@ -1,4 +1,4 @@
-package com.smartspending.common.jwt;
+package com.smartspending.common.auth.jwt;
 
 import com.smartspending.common.exception.CommonResponseCode;
 import com.smartspending.common.exception.CustomException;

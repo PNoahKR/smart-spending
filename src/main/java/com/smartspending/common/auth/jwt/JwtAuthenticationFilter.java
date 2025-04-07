@@ -1,5 +1,6 @@
-package com.smartspending.common.jwt;
+package com.smartspending.common.auth.jwt;
 
+import com.smartspending.common.auth.UserDetailsImpl;
 import com.smartspending.common.redis.RedisService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -44,9 +45,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (jwtTokenProvider.validateToken(token)) {
             log.debug("JWT token validated");
             Long userId = jwtTokenProvider.getUserIdFromToken(token);
+            String email = jwtTokenProvider.getEmailFromToken(token);
+
+            UserDetailsImpl userDetails = new UserDetailsImpl(userId, email);
 
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
+                    new UsernamePasswordAuthenticationToken(userDetails, null, Collections.emptyList());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);

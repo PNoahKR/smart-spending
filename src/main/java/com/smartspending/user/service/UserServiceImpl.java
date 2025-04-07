@@ -2,7 +2,7 @@ package com.smartspending.user.service;
 
 import com.smartspending.common.exception.CommonResponseCode;
 import com.smartspending.common.exception.CustomException;
-import com.smartspending.common.jwt.JwtTokenProvider;
+import com.smartspending.common.auth.jwt.JwtTokenProvider;
 import com.smartspending.common.redis.RedisService;
 import com.smartspending.user.dto.request.*;
 import com.smartspending.user.dto.response.LoginResponseDto;
