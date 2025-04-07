@@ -26,11 +26,12 @@ public class CategoryServiceImpl implements CategoryService {
         User user = userRepository.findById(userId).orElseThrow();
         String categoryName = requestDto.getName();
         validateCategoryName(categoryName);
-        Category.builder()
+        Category category = Category.builder()
                 .name(categoryName)
                 .user(user)
                 .isDefault(false)
                 .build();
+        categoryRepository.save(category);
     }
 
     @Override

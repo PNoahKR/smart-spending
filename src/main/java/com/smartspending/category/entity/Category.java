@@ -31,10 +31,10 @@ public class Category extends BaseEntity {
     private User user;
 
     @Builder
-    public Category(Long id, String name, boolean isDefault, User user) {
-        this.id = id;
+    public Category(String name, boolean isDefault, User user) {
         this.name = name;
         this.isDefault = isDefault;
+        this.user = user;
     }
 
     public void updateName(String name) {
