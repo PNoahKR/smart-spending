@@ -1,8 +1,13 @@
 package com.smartspending.user.entity;
 
+import com.smartspending.category.entity.Category;
 import com.smartspending.common.entity.BaseEntity;
+import com.smartspending.transaction.entity.Transaction;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -27,6 +32,12 @@ public class User extends BaseEntity {
 
     @Column(name = "email_verified")
     private boolean emailVerified;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Category> categories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Transaction> transactions = new ArrayList<>();
 
     @Builder
     public User(String email, String password, String name, Boolean emailVerified) {
