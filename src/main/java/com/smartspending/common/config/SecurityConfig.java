@@ -1,7 +1,7 @@
 package com.smartspending.common.config;
 
-import com.smartspending.common.jwt.JwtAuthenticationFilter;
-import com.smartspending.common.jwt.JwtTokenProvider;
+import com.smartspending.common.auth.jwt.JwtAuthenticationFilter;
+import com.smartspending.common.auth.jwt.JwtTokenProvider;
 import com.smartspending.common.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
