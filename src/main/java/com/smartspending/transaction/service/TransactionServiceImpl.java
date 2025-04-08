@@ -2,7 +2,10 @@ package com.smartspending.transaction.service;
 
 import com.smartspending.category.entity.Category;
 import com.smartspending.category.repository.CategoryRepository;
+import com.smartspending.common.exception.CommonResponseCode;
+import com.smartspending.common.exception.CustomException;
 import com.smartspending.transaction.dto.request.TransactionRequestDto;
+import com.smartspending.transaction.dto.request.TransactionUpdateDto;
 import com.smartspending.transaction.dto.response.TransactionResponseDto;
 import com.smartspending.transaction.entity.Transaction;
 import com.smartspending.transaction.repository.TransactionRepository;
@@ -22,6 +25,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final CategoryRepository categoryRepository;
 
     @Override
+    @Transactional
     public TransactionResponseDto create(TransactionRequestDto requestDto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
         Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow();
@@ -35,5 +39,45 @@ public class TransactionServiceImpl implements TransactionService {
                 .build();
         Transaction save = transactionRepository.save(transaction);
         return new TransactionResponseDto(save);
+    }
+
+    @Override
+    @Transactional
+    public TransactionResponseDto update(TransactionUpdateDto requestDto, Long userId) {
+        Transaction transaction = transactionRepository.findById(requestDto.getId()).orElseThrow();
+
+        if (!transaction.getUser().getId().equals(userId)) {
+            throw new CustomException(CommonResponseCode.UNAUTHORIZED_USER);
+        }
+
+        if (requestDto.getAmount() != null) {
+            transaction.updateAmount(requestDto.getAmount());
+        }
+        if (requestDto.getDate() != null) {
+            transaction.updateDate(requestDto.getDate());
+        }
+        if (requestDto.getMemo() != null) {
+            transaction.updateMemo(requestDto.getMemo());
+        }
+        if (requestDto.getType() != null) {
+            transaction.updateType(requestDto.getType());
+        }
+        if (requestDto.getCategoryId() != null) {
+            Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow();
+            transaction.updateCategory(category);
+        }
+        return new TransactionResponseDto(transaction);
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long id, Long userId) {
+        Transaction transaction = transactionRepository.findById(id).orElseThrow();
+
+        if (!transaction.getUser().getId().equals(userId)) {
+            throw new CustomException(CommonResponseCode.UNAUTHORIZED_USER);
+        }
+
+        transactionRepository.delete(transaction);
     }
 }

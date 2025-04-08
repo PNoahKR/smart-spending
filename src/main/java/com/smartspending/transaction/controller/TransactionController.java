@@ -4,14 +4,12 @@ import com.smartspending.common.auth.UserDetailsImpl;
 import com.smartspending.common.response.CommonResponse;
 import com.smartspending.common.util.ApiResponseUtil;
 import com.smartspending.transaction.dto.request.TransactionRequestDto;
+import com.smartspending.transaction.dto.request.TransactionUpdateDto;
 import com.smartspending.transaction.dto.response.TransactionResponseDto;
 import com.smartspending.transaction.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,5 +22,20 @@ public class TransactionController {
     public CommonResponse<TransactionResponseDto> create(@RequestBody TransactionRequestDto transactionRequestDto,
                                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ApiResponseUtil.success(transactionService.create(transactionRequestDto, userDetails.getUserId()));
+    }
+
+    @PatchMapping("/update/{id}")
+    public CommonResponse<TransactionResponseDto> update(@PathVariable Long id,
+                                                         @RequestBody TransactionUpdateDto transactionUpdateDto,
+                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        transactionUpdateDto.setId(id);
+        return ApiResponseUtil.success(transactionService.update(transactionUpdateDto, userDetails.getUserId()));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public CommonResponse<Void> delete(@PathVariable Long id,
+                                       @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        transactionService.delete(id, userDetails.getUserId());
+        return ApiResponseUtil.success();
     }
 }

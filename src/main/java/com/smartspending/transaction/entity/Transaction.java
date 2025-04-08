@@ -55,4 +55,24 @@ public class Transaction extends BaseEntity {
         this.type = type;
         this.category = category;
     }
+
+    public void updateAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public void updateDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public void updateMemo(String memo) {
+        this.memo = memo;
+    }
+
+    public void updateType(TransactionType type) {
+        this.type = type;
+    }
+
+    public void updateCategory(Category category) {
+        this.category = category;
+    }
 }
