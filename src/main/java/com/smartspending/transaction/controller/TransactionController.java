@@ -7,6 +7,7 @@ import com.smartspending.transaction.dto.request.TransactionRequestDto;
 import com.smartspending.transaction.dto.request.TransactionUpdateDto;
 import com.smartspending.transaction.dto.response.TransactionResponseDto;
 import com.smartspending.transaction.service.TransactionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -19,14 +20,14 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping("/create")
-    public CommonResponse<TransactionResponseDto> create(@RequestBody TransactionRequestDto transactionRequestDto,
+    public CommonResponse<TransactionResponseDto> create(@RequestBody @Valid TransactionRequestDto transactionRequestDto,
                                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ApiResponseUtil.success(transactionService.create(transactionRequestDto, userDetails.getUserId()));
     }
 
     @PatchMapping("/update/{id}")
     public CommonResponse<TransactionResponseDto> update(@PathVariable Long id,
-                                                         @RequestBody TransactionUpdateDto transactionUpdateDto,
+                                                         @RequestBody @Valid TransactionUpdateDto transactionUpdateDto,
                                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
         transactionUpdateDto.setId(id);
         return ApiResponseUtil.success(transactionService.update(transactionUpdateDto, userDetails.getUserId()));

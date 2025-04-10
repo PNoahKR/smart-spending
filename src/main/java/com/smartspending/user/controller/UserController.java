@@ -6,6 +6,7 @@ import com.smartspending.user.dto.request.*;
 import com.smartspending.user.dto.response.LoginResponseDto;
 import com.smartspending.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,12 +34,12 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public CommonResponse<Long> register(@RequestBody RegisterRequestDto registerRequestDto) {
+    public CommonResponse<Long> register(@RequestBody @Valid RegisterRequestDto registerRequestDto) {
         return ApiResponseUtil.success(userService.register(registerRequestDto));
     }
 
     @PostMapping("/login")
-    public CommonResponse<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
+    public CommonResponse<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
         return ApiResponseUtil.success(userService.login(loginRequestDto));
     }
 
@@ -54,7 +55,7 @@ public class UserController {
     }
 
     @PostMapping("/findPassword")
-    public CommonResponse<Void> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+    public CommonResponse<Void> resetPassword(@RequestBody @Valid ResetPasswordDto resetPasswordDto) {
         userService.resetPassword(resetPasswordDto);
         return ApiResponseUtil.success();
     }
