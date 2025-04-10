@@ -69,9 +69,4 @@ public class UserController {
         userService.logout(request);
         return ApiResponseUtil.success();
     }
-
-    @GetMapping("/test")
-    public String test() {
-        return "성공";
-    }
 }

@@ -19,7 +19,7 @@ public class CategoryController {
     @PostMapping("/create")
     public CommonResponse<Void> createCategory(@RequestBody CategoryRequestDto categoryRequestDto,
                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        categoryService.save(categoryRequestDto, userDetails.getUserId());
+        categoryService.create(categoryRequestDto, userDetails.getUserId());
         return ApiResponseUtil.success();
     }
 

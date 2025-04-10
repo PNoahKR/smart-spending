@@ -22,7 +22,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public void save(CategoryRequestDto requestDto, Long userId) {
+    public void create(CategoryRequestDto requestDto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
         String categoryName = requestDto.getName();
         validateCategoryName(categoryName);

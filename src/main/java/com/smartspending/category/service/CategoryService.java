@@ -4,7 +4,7 @@ import com.smartspending.category.dto.request.CategoryRequestDto;
 import com.smartspending.category.dto.request.CategoryUpdateDto;
 
 public interface CategoryService {
-    void save(CategoryRequestDto requestDto, Long userId);
+    void create(CategoryRequestDto requestDto, Long userId);
     void update(CategoryUpdateDto requestDto, Long userId);
     void delete(Long id, Long userId);
 }
