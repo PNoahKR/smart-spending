@@ -23,7 +23,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void create(CategoryRequestDto requestDto, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(CommonResponseCode.USER_NOT_FOUND));
         String categoryName = requestDto.getName();
         validateCategoryName(categoryName);
         Category category = Category.builder()
@@ -38,7 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public void update(CategoryUpdateDto requestDto, Long userId) {
         Long categoryId = requestDto.getId();
-        Category category = categoryRepository.findById(categoryId).orElseThrow();
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new CustomException(CommonResponseCode.CATEGORY_NOT_FOUND));
 
         validateUserId(userId, category);
 
@@ -51,7 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void delete(Long id, Long userId) {
-        Category category = categoryRepository.findById(id).orElseThrow();
+        Category category = categoryRepository.findById(id).orElseThrow(() -> new CustomException(CommonResponseCode.CATEGORY_NOT_FOUND));
         validateUserId(userId, category);
         categoryRepository.deleteById(id);
     }

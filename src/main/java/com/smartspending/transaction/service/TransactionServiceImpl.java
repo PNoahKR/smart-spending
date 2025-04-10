@@ -27,8 +27,8 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     @Transactional
     public TransactionResponseDto create(TransactionRequestDto requestDto, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow();
-        Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(CommonResponseCode.USER_NOT_FOUND));
+        Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow(() -> new CustomException(CommonResponseCode.CATEGORY_NOT_FOUND));
         Transaction transaction = Transaction.builder()
                 .user(user)
                 .amount(requestDto.getAmount())
@@ -44,7 +44,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     @Transactional
     public TransactionResponseDto update(TransactionUpdateDto requestDto, Long userId) {
-        Transaction transaction = transactionRepository.findById(requestDto.getId()).orElseThrow();
+        Transaction transaction = transactionRepository.findById(requestDto.getId()).orElseThrow(() -> new CustomException(CommonResponseCode.TRANSACTION_NOT_FOUND));
 
         if (!transaction.getUser().getId().equals(userId)) {
             throw new CustomException(CommonResponseCode.UNAUTHORIZED_USER);
@@ -63,7 +63,7 @@ public class TransactionServiceImpl implements TransactionService {
             transaction.updateType(requestDto.getType());
         }
         if (requestDto.getCategoryId() != null) {
-            Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow();
+            Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow(() -> new CustomException(CommonResponseCode.CATEGORY_NOT_FOUND));
             transaction.updateCategory(category);
         }
         return new TransactionResponseDto(transaction);
@@ -72,7 +72,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     @Transactional
     public void delete(Long id, Long userId) {
-        Transaction transaction = transactionRepository.findById(id).orElseThrow();
+        Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new CustomException(CommonResponseCode.TRANSACTION_NOT_FOUND));
 
         if (!transaction.getUser().getId().equals(userId)) {
             throw new CustomException(CommonResponseCode.UNAUTHORIZED_USER);
