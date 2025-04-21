@@ -18,8 +18,7 @@ public enum CommonResponseCode {
     PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다"),
     CATEGORY_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 카테코리명 입니다"),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 카테고리 입니다"),
-    TRANSACTION_NOT_FOUND(HttpStatus.NOT_FOUND,"준재하지 않는 내역 입니다"),
-    ;
+    TRANSACTION_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 내역 입니다");
 
     private final HttpStatus httpStatus;
     private final String message;
