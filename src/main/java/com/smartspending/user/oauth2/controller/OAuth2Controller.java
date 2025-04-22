@@ -12,7 +12,7 @@ public class OAuth2Controller {
 
     // 소셜 로그인 성공
     @GetMapping("/social-login")
-    public CommonResponse<LoginResponseDto> testLoginSuccess(@RequestHeader("Authorization") String authorizationHeader) {
+    public CommonResponse<LoginResponseDto> socialLogin(@RequestHeader("Authorization") String authorizationHeader) {
         String accessToken = authorizationHeader.substring("Bearer ".length());
         String refreshToken = authorizationHeader.substring("Bearer ".length());
 

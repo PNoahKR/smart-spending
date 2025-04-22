@@ -4,6 +4,7 @@ import com.smartspending.common.auth.UserDetailsImpl;
 import com.smartspending.user.entity.User;
 import com.smartspending.user.enums.Provider;
 import com.smartspending.user.oauth2.user.GoogleUserInfo;
+import com.smartspending.user.oauth2.user.KakaoUserInfo;
 import com.smartspending.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -46,6 +47,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             User user = userRepository.findByEmail(email).orElseGet(() -> saveSocialUser(email, name, registerId, providerId));
 
             return new UserDetailsImpl(user.getId(), user.getEmail(), user.getName(), attributes);
+        } else if (registerId.equals("kakao")) {
+            KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(attributes);
+            String email = kakaoUserInfo.getEmail();
+            String name = kakaoUserInfo.getName();
+            String providerId = attributes.get(userNameAttributeName).toString();
+
+            User user = userRepository.findByEmail(email).orElseGet(() -> saveSocialUser(email, name, registerId, providerId));
+
+            return new UserDetailsImpl(user.getId(), user.getEmail(), user.getName(), attributes);
         } else {
             throw new OAuth2AuthenticationException("Unsupported provider: " + registerId);
         }
@@ -58,6 +68,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         if (registerId.equals(Provider.GOOGLE.toString().toLowerCase())) {
             provider = Provider.GOOGLE;
+        } else if (registerId.equals(Provider.KAKAO.toString().toLowerCase())) {
+            provider = Provider.KAKAO;
         }
 
         User user = User.builder()
