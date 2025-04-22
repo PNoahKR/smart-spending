@@ -34,8 +34,11 @@ public class User extends BaseEntity {
     @Column(name = "email_verified")
     private boolean emailVerified;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "provider")
     private Provider provider;
 
+    @Column(name = "provider_id")
     private String providerId;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
