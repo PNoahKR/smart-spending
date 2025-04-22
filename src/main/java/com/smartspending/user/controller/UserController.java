@@ -43,18 +43,18 @@ public class UserController {
         return ApiResponseUtil.success(userService.login(loginRequestDto));
     }
 
-    @PostMapping("/findPassword/send-code")
+    @PostMapping("/find-password/send-code")
     public CommonResponse<Void> sendPasswordResetCode(@RequestParam String email) {
         userService.sendVerificationCode(email);
         return ApiResponseUtil.success();
     }
 
-    @PostMapping("/findPassword/verify-code")
+    @PostMapping("/find-password/verify-code")
     public CommonResponse<Boolean> verifyPasswordResetCode(@RequestBody VerifyCodeRequestDto verifyCodeRequestDto) {
         return ApiResponseUtil.success(userService.verifyEmail(verifyCodeRequestDto));
     }
 
-    @PostMapping("/findPassword")
+    @PostMapping("/find-password")
     public CommonResponse<Void> resetPassword(@RequestBody @Valid ResetPasswordDto resetPasswordDto) {
         userService.resetPassword(resetPasswordDto);
         return ApiResponseUtil.success();
