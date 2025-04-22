@@ -2,7 +2,10 @@ package com.smartspending.common.config;
 
 import com.smartspending.common.auth.jwt.JwtAuthenticationFilter;
 import com.smartspending.common.auth.jwt.JwtTokenProvider;
+import com.smartspending.common.auth.oauth2.OAuth2FailHandler;
+import com.smartspending.common.auth.oauth2.OAuth2SuccessHandler;
 import com.smartspending.common.redis.RedisService;
+import com.smartspending.user.oauth2.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +30,9 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2FailHandler oAuth2FailHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -68,6 +74,12 @@ public class SecurityConfig {
                                         "/user/register/**",
                                         "/user/findPassword/**").permitAll()
                                 .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oAuth2SuccessHandler)
+                        .failureHandler(oAuth2FailHandler)
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+                                .userService(customOAuth2UserService))
                 );
         return http.build();
     }

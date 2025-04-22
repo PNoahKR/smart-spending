@@ -1,12 +1,13 @@
 package com.smartspending.user.service;
 
+import com.smartspending.common.auth.jwt.JwtTokenProvider;
 import com.smartspending.common.exception.CommonResponseCode;
 import com.smartspending.common.exception.CustomException;
-import com.smartspending.common.auth.jwt.JwtTokenProvider;
 import com.smartspending.common.redis.RedisService;
 import com.smartspending.user.dto.request.*;
 import com.smartspending.user.dto.response.LoginResponseDto;
 import com.smartspending.user.entity.User;
+import com.smartspending.user.enums.Provider;
 import com.smartspending.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Email;
@@ -15,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 @Service
 @Transactional(readOnly = true)
@@ -38,6 +41,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void sendVerificationCode(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(CommonResponseCode.USER_NOT_FOUND));
+        if (!user.getProvider().equals(Provider.LOCAL)) {
+            throw new CustomException(CommonResponseCode.USER_NOT_FOUND);
+        }
         String code = mailService.verifyCode();
         redisService.removeVerificationCode(email); // 이전 실패 경험 데이터 삭제
         redisService.saveVerificationCode(email, code);
@@ -66,6 +74,7 @@ public class UserServiceImpl implements UserService {
                 .password(encodePassword)
                 .name(requestDto.getName())
                 .emailVerified(true)
+                .provider(Provider.LOCAL)
                 .build();
         userRepository.save(user);
         return user.getId();
@@ -76,11 +85,14 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new CustomException(CommonResponseCode.USER_NOT_FOUND));
 
+        if (!user.getProvider().equals(Provider.LOCAL)) {
+            throw new CustomException(CommonResponseCode.USER_NOT_FOUND);
+        }
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             throw new CustomException(CommonResponseCode.USER_NOT_FOUND);
         }
 
-        String accessToken = jwtTokenProvider.createAccessToken(user.getId(), user.getEmail());
+        String accessToken = jwtTokenProvider.createAccessToken(user.getId(), user.getEmail(), null);
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(), user.getEmail());
 
         redisService.saveRefreshToken(user.getId(), refreshToken);
@@ -107,6 +119,7 @@ public class UserServiceImpl implements UserService {
 
         Long userId = jwtTokenProvider.getUserIdFromToken(requestDto.getAccessToken());
         String email = jwtTokenProvider.getEmailFromToken(requestDto.getAccessToken());
+        Map<String, Object> attributes = jwtTokenProvider.getAttributesFromToken(requestDto.getAccessToken());
 
         if(!redisService.checkRefreshToken(userId, requestDto.getRefreshToken())) {
             throw new CustomException(CommonResponseCode.UNAUTHORIZED_USER);
@@ -118,7 +131,13 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(CommonResponseCode.UNAUTHORIZED_USER);
         }
 
-        String accessToken = jwtTokenProvider.createAccessToken(userId, email);
+        String accessToken;
+
+        if (attributes != null && !attributes.isEmpty()) {
+            accessToken = jwtTokenProvider.createAccessToken(userId, email, attributes);
+        } else {
+            accessToken = jwtTokenProvider.createAccessToken(userId, email, null);
+        }
 
         return new LoginResponseDto(accessToken, refreshToken);
     }

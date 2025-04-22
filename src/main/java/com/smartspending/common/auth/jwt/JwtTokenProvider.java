@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -37,11 +39,14 @@ public class JwtTokenProvider {
         key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createAccessToken(Long userId, String email) {
+    public String createAccessToken(Long userId, String email, Map<String, Object> attributes) {
         Date now = new Date();
+        Claims claims = Jwts.claims().setSubject(email).setId(String.valueOf(userId));
+        if (attributes != null) {
+            claims.putAll(attributes);
+        }
         return Jwts.builder()
-                .setSubject(email)
-                .setId(String.valueOf(userId))
+                .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + accessExpirationTime))
                 .signWith(key, signatureAlgorithm)
@@ -104,5 +109,20 @@ public class JwtTokenProvider {
         long expiration = claims.getExpiration().getTime(); // 만료 시간 (밀리초)
         long currentTime = System.currentTimeMillis(); // 현재 시간 (밀리초)
         return String.valueOf(expiration - currentTime); // 남은 유효 시간
+    }
+
+    public Map<String, Object> getAttributesFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        Map<String, Object> attributes = new HashMap<>();
+        claims.forEach((key, value) -> {
+            if (!"sub".equals(key) && !"jti".equals(key) && !"iat".equals(key) && !"exp".equals(key)) {
+                attributes.put(key, value);
+            }
+        });
+        return attributes;
     }
 }
