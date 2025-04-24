@@ -61,7 +61,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
     }
 
-    private User saveSocialUser(String email, String name, String registerId, String providerId) {
+    @Transactional
+    public User saveSocialUser(String email, String name, String registerId, String providerId) {
         Provider provider = null;
 
         String password = randomPassword();
