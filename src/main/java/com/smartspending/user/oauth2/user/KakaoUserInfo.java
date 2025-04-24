@@ -10,12 +10,10 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class KakaoUserInfo {
-    private String socialId;
     private Map<String, Object> account;
     private Map<String, Object> profile;
 
     public KakaoUserInfo(Map<String, Object> attributes) {
-        this.socialId = String.valueOf(attributes.get("id"));
         this.account = (Map<String, Object>) attributes.get("kakao_account");
         this.profile = (Map<String, Object>) account.get("profile");
     }
