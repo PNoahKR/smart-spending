@@ -51,7 +51,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Map<String, Object> attributes = jwtTokenProvider.getAttributesFromToken(token);
             UserDetailsImpl userDetails;
             if (attributes != null && !attributes.isEmpty()) {
-                String name = attributes.get("name").toString();
+                String name = "Unknown User";
+                if (attributes.containsKey("kakao_account")) {
+                    Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+                    if (kakaoAccount.containsKey("profile")) {
+                        Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+                        if (profile.containsKey("nickname")) {
+                            name = profile.get("nickname").toString();
+                        }
+                    }
+                } else if (attributes.containsKey("name")) {
+                    // Google의 경우 name 속성 사용
+                    name = attributes.get("name").toString();
+                }
                 userDetails = new UserDetailsImpl(userId, email, name, attributes);
             } else {
                 userDetails = new UserDetailsImpl(userId, email);
