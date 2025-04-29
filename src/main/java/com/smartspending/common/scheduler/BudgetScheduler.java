@@ -18,7 +18,7 @@ public class BudgetScheduler {
     private final BudgetService budgetService;
 
     @Scheduled(cron = "0 0 0 * * ?")
-    public void renewBudget() {
+    public void renewBudgetScheduler() {
         List<Budget> activeBudget = budgetRepository.findByIsActiveTrueAndIsRecurringTrue();
 
         for (Budget budget : activeBudget) {
