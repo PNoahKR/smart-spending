@@ -67,4 +67,24 @@ public class Budget extends BaseEntity {
     public void updateEndDate(LocalDate newEndDate) {
         this.endDate = newEndDate;
     }
+
+    public void updateAmount(BigDecimal newAmount) {
+        this.amount = newAmount;
+    }
+
+    public void updatePeriodType(BudgetPeriodType newPeriodType) {
+        this.periodType = newPeriodType;
+    }
+
+    public void updatePeriod(Integer newPeriod) {
+        this.period = newPeriod;
+    }
+
+    public void updateIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public void updateIsRecurring(boolean isRecurring) {
+        this.isRecurring = isRecurring;
+    }
 }

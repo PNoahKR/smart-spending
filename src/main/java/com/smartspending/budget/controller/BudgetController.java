@@ -8,10 +8,7 @@ import com.smartspending.common.response.CommonResponse;
 import com.smartspending.common.util.ApiResponseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,5 +20,19 @@ public class BudgetController {
     public CommonResponse<BudgetResponseDto> create(@RequestBody BudgetRequestDto budgetRequestDto,
                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ApiResponseUtil.success(budgetService.create(budgetRequestDto, userDetails.getUserId()));
+    }
+
+    @PatchMapping("/update/{id}")
+    public CommonResponse<BudgetResponseDto> update(@PathVariable Long id,
+                                                    @RequestBody BudgetRequestDto budgetRequestDto,
+                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ApiResponseUtil.success(budgetService.update(id, budgetRequestDto, userDetails.getUserId()));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public CommonResponse<Void> delete(@PathVariable Long id,
+                                       @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        budgetService.delete(id, userDetails.getUserId());
+        return ApiResponseUtil.success();
     }
 }

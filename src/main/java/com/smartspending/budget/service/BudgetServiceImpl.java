@@ -70,6 +70,53 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     @Transactional
+    public BudgetResponseDto update(Long id, BudgetRequestDto requestDto, Long userId) {
+        Budget budget = budgetRepository.findById(id)
+                .orElseThrow(() -> new CustomException(CommonResponseCode.BUDGET_NOT_FOUND));
+
+        if (!budget.getUser().getId().equals(userId)) {
+            throw new CustomException(CommonResponseCode.UNAUTHORIZED_USER);
+        }
+
+        if (requestDto.getAmount() != null) {
+            budget.updateAmount(requestDto.getAmount());
+        }
+
+        if (requestDto.getPeriodType() != null) {
+            budget.updatePeriodType(requestDto.getPeriodType());
+        }
+
+        if (requestDto.getPeriod() != null) {
+            budget.updatePeriod(requestDto.getPeriod());
+        }
+
+        if (requestDto.isActive() != budget.isActive()) {
+            budget.updateIsActive(requestDto.isActive());
+        }
+
+        if (requestDto.isRecurring() != budget.isRecurring()) {
+            budget.updateIsRecurring(requestDto.isRecurring());
+        }
+
+        budgetRepository.save(budget);
+
+        return new BudgetResponseDto(budget);
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long id, Long userId) {
+        Budget budget = budgetRepository.findById(id)
+                .orElseThrow(() -> new CustomException(CommonResponseCode.BUDGET_NOT_FOUND));
+
+        if (!budget.getUser().getId().equals(userId)) {
+            throw new CustomException(CommonResponseCode.UNAUTHORIZED_USER);
+        }
+        budgetRepository.delete(budget);
+    }
+
+    @Override
+    @Transactional
     public Budget renewBudget(Long budgetId) {
         Budget budget = budgetRepository.findById(budgetId)
                 .orElseThrow(() -> new CustomException(CommonResponseCode.BUDGET_NOT_FOUND));
