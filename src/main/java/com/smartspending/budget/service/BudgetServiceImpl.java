@@ -51,6 +51,11 @@ public class BudgetServiceImpl implements BudgetService {
 
         boolean isActive = requestDto.isActive();
         boolean isRecurring = requestDto.isRecurring();
+        boolean mainBudget = requestDto.isMainBudget();
+
+        if (mainBudget) {
+            budgetRepository.findByMainBudgetTrueAndUserId(userId).ifPresent(budget -> budget.updateMainBudget(false));
+        }
 
         Budget budget = Budget.builder()
                 .user(user)
@@ -61,6 +66,7 @@ public class BudgetServiceImpl implements BudgetService {
                 .endDate(endDate)
                 .isActive(isActive)
                 .isRecurring(isRecurring)
+                .mainBudget(mainBudget)
                 .build();
 
         budgetRepository.save(budget);
@@ -96,6 +102,14 @@ public class BudgetServiceImpl implements BudgetService {
 
         if (requestDto.isRecurring() != budget.isRecurring()) {
             budget.updateIsRecurring(requestDto.isRecurring());
+        }
+
+        if (requestDto.isMainBudget() != budget.isMainBudget()) {
+            if (requestDto.isMainBudget()) {
+                budgetRepository.findByMainBudgetTrueAndUserId(userId).ifPresent(b -> b.updateMainBudget(false));
+                budget.updateMainBudget(requestDto.isMainBudget());
+            }
+            budget.updateMainBudget(requestDto.isMainBudget());
         }
 
         budgetRepository.save(budget);

@@ -33,4 +33,8 @@ public class BudgetRequestDto {
     @JsonProperty("isRecurring")
     private boolean isRecurring;
 
+    @NotNull
+    @JsonProperty("mainBudget")
+    private boolean mainBudget;
+
 }

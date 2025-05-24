@@ -48,8 +48,11 @@ public class Budget extends BaseEntity {
     @Column(name = "is_recurring", nullable = false)
     private boolean isRecurring;
 
+    @Column(name = "main_budget", nullable = false)
+    private boolean mainBudget;
+
     @Builder
-    public Budget(User user, BigDecimal amount, BudgetPeriodType periodType, Integer period, LocalDate startDate, LocalDate endDate, boolean isActive, boolean isRecurring) {
+    public Budget(User user, BigDecimal amount, BudgetPeriodType periodType, Integer period, LocalDate startDate, LocalDate endDate, boolean isActive, boolean isRecurring, boolean mainBudget) {
         this.user = user;
         this.amount = amount;
         this.periodType = periodType;
@@ -58,6 +61,7 @@ public class Budget extends BaseEntity {
         this.endDate = endDate;
         this.isActive = isActive;
         this.isRecurring = isRecurring;
+        this.mainBudget = mainBudget;
     }
 
     public void updateStartDate(LocalDate newStartDate) {
@@ -86,5 +90,9 @@ public class Budget extends BaseEntity {
 
     public void updateIsRecurring(boolean isRecurring) {
         this.isRecurring = isRecurring;
+    }
+
+    public void updateMainBudget(boolean mainBudget) {
+        this.mainBudget = mainBudget;
     }
 }
