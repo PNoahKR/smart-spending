@@ -1,5 +1,6 @@
 package com.smartspending.user.entity;
 
+import com.smartspending.budget.entity.Budget;
 import com.smartspending.category.entity.Category;
 import com.smartspending.common.entity.BaseEntity;
 import com.smartspending.transaction.entity.Transaction;
@@ -46,6 +47,9 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Budget> budgets = new ArrayList<>();
 
     @Builder
     public User(String email, String password, String name, Boolean emailVerified, Provider provider, String providerId) {
