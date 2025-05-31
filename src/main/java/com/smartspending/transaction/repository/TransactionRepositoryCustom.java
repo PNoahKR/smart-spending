@@ -5,13 +5,14 @@ import com.smartspending.dashboard.dto.response.CategoryStatisticDto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface TransactionRepositoryCustom {
 
-    BigDecimal sumIncomeByUserAndDate(Long userId, LocalDate startDate, LocalDate endDate);
+    Optional<BigDecimal> sumIncomeByUserAndDate(Long userId, LocalDate startDate, LocalDate endDate);
 
-    BigDecimal sumExpenseByUserAndDate(Long userId, LocalDate startDate, LocalDate endDate);
+    Optional<BigDecimal> sumExpenseByUserAndDate(Long userId, LocalDate startDate, LocalDate endDate);
 
-    List<CategoryStatisticDto> findTopSpendingCategories(Long userId, LocalDate startDate, LocalDate endDate);
+    Optional<List<CategoryStatisticDto>> findTopSpendingCategories(Long userId, LocalDate startDate, LocalDate endDate);
 
 }
