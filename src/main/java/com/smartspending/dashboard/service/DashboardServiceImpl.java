@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -28,13 +29,13 @@ public class DashboardServiceImpl implements DashboardService {
             endDate = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth());
         }
 
-        BigDecimal totalIncome = transactionRepository.sumIncomeByUserAndDate(userId, startDate, endDate);
-        BigDecimal totalExpense = transactionRepository.sumExpenseByUserAndDate(userId, startDate, endDate);
+        BigDecimal totalIncome = transactionRepository.sumIncomeByUserAndDate(userId, startDate, endDate).orElse(BigDecimal.ZERO);
+        BigDecimal totalExpense = transactionRepository.sumExpenseByUserAndDate(userId, startDate, endDate).orElse(BigDecimal.ZERO);
 
         BigDecimal mainBudget = budgetRepository.findMainBudgetByUser(userId).orElse(new BigDecimal(0));
         BigDecimal remainingBudget = mainBudget.subtract(totalExpense);
 
-        List<CategoryStatisticDto> topCategories = transactionRepository.findTopSpendingCategories(userId, startDate, endDate);
+        List<CategoryStatisticDto> topCategories = transactionRepository.findTopSpendingCategories(userId, startDate, endDate).orElse(Collections.emptyList());
 
         BigDecimal totalAmount = totalIncome.add(totalExpense); // 총 거래 금액
         BigDecimal incomePercentage = BigDecimal.ZERO;
