@@ -41,11 +41,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void sendVerificationCode(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(CommonResponseCode.USER_NOT_FOUND));
-        if (!user.getProvider().equals(Provider.LOCAL)) {
-            throw new CustomException(CommonResponseCode.USER_NOT_FOUND);
-        }
+
         String code = mailService.verifyCode();
         redisService.removeVerificationCode(email); // 이전 실패 경험 데이터 삭제
         redisService.saveVerificationCode(email, code);
