@@ -2,6 +2,7 @@ package com.smartspending.category.controller;
 
 import com.smartspending.category.dto.request.CategoryRequestDto;
 import com.smartspending.category.dto.request.CategoryUpdateDto;
+import com.smartspending.category.dto.response.CategoryResponseDto;
 import com.smartspending.category.service.CategoryService;
 import com.smartspending.common.auth.UserDetailsImpl;
 import com.smartspending.common.response.CommonResponse;
@@ -10,11 +11,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/category")
 public class CategoryController {
     private final CategoryService categoryService;
+
+    @GetMapping("/list")
+    public CommonResponse<List<CategoryResponseDto>> getList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ApiResponseUtil.success(categoryService.getList(userDetails.getUserId()));
+    }
 
     @PostMapping("/create")
     public CommonResponse<Void> createCategory(@RequestBody CategoryRequestDto categoryRequestDto,

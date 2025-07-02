@@ -10,11 +10,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/budget")
 public class BudgetController {
     private final BudgetService budgetService;
+
+    @GetMapping("/list")
+    public CommonResponse<List<BudgetResponseDto>> getBudgets(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ApiResponseUtil.success(budgetService.getBudgets(userDetails.getUserId()));
+    }
+
 
     @PostMapping("/create")
     public CommonResponse<BudgetResponseDto> create(@RequestBody BudgetRequestDto budgetRequestDto,

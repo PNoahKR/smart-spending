@@ -1,24 +1,24 @@
 package com.smartspending.common.auth.oauth2;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartspending.common.auth.UserDetailsImpl;
 import com.smartspending.common.auth.jwt.JwtTokenProvider;
 import com.smartspending.common.redis.RedisService;
-import com.smartspending.common.response.CommonResponse;
-import com.smartspending.common.util.ApiResponseUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -26,29 +26,28 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        try {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            Long userId = userDetails.getUserId();
+            String email = userDetails.getEmail();
+            Map<String, Object> attributes = userDetails.getAttributes();
 
-        Long userId = userDetails.getUserId();
-        String email = userDetails.getEmail();
-        Map<String, Object> attributes = userDetails.getAttributes();
+            String accessToken = jwtTokenProvider.createAccessToken(userId, email, attributes);
+            String refreshToken = jwtTokenProvider.createRefreshToken(userId, email);
 
-        String accessToken = jwtTokenProvider.createAccessToken(userId, email, attributes);
-        String refreshToken = jwtTokenProvider.createRefreshToken(userId, email);
+            redisService.saveRefreshToken(userId, refreshToken);
 
-        redisService.saveRefreshToken(userId, refreshToken);
+            String redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/oauth2/success")
+                    .queryParam("access", accessToken)
+                    .queryParam("refresh", refreshToken)
+                    .build().toUriString();
 
-        // 응답 객체 생성
-        Map<String, String> tokens = Map.of(
-                "accessToken", accessToken,
-                "refreshToken", refreshToken
-        );
-        CommonResponse<Map<String, String>> successResponse = ApiResponseUtil.success(tokens);
-
-        // 응답 작성
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(new ObjectMapper().writeValueAsString(successResponse));
+            response.sendRedirect(redirectUrl);
+        } catch (Exception e) {
+            log.error("OAuth2 Success Handler 실패 : ", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
 
     }
 }

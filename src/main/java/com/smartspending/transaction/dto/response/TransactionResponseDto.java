@@ -18,6 +18,7 @@ public class TransactionResponseDto {
     private String memo;
     private String type;
     private String category;
+    private Long categoryId;
 
     public TransactionResponseDto(Transaction transaction) {
         this.id = transaction.getId();
@@ -26,5 +27,6 @@ public class TransactionResponseDto {
         this.memo = transaction.getMemo();
         this.type = transaction.getType().name();
         this.category = transaction.getCategory().getName();
+        this.categoryId = transaction.getCategory().getId();
     }
 }

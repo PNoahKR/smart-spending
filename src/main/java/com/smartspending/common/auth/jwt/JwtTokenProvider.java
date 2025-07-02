@@ -77,6 +77,7 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(key).parseClaimsJws(token);
             return true;
         } catch (Exception e) {
+            log.debug("JWT 검증 실패 : " + e.getMessage());
             return false;
         }
     }

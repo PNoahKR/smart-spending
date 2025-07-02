@@ -21,7 +21,8 @@ public class RedisService {
     }
 
     public void setBlackList(String token, String expiration) {
-        redisTemplate.opsForSet().add("blackList: " + token, token, expiration);
+        redisTemplate.opsForValue().set("blackList:" + token, token);
+        redisTemplate.expire("blackList:" + token, Long.parseLong(expiration), TimeUnit.MILLISECONDS);
     }
 
     public void removeRefreshToken(Long userId) {
@@ -34,8 +35,8 @@ public class RedisService {
     }
 
     public boolean checkBlackList(String token) {
-        String storedRefreshToken = (String) redisTemplate.opsForValue().get("blackList: " + token);
-        return storedRefreshToken != null && storedRefreshToken.equals(token);
+        String stored = (String) redisTemplate.opsForValue().get("blackList:" + token);
+        return stored != null && stored.equals(token);
     }
 
     public void saveVerificationCode(String email, String code) {

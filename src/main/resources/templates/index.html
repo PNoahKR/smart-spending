@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Spending - 홈</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .hero {
+            background: linear-gradient(to right, #20c997, #0d6efd);
+            color: white;
+            padding: 80px 30px;
+            text-align: center;
+            border-radius: 0.5rem;
+        }
+        .hero h1 {
+            font-weight: 700;
+        }
+        .hero p {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<!-- 헤더 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/">Smart Spending</a>
+        <div class="ms-auto">
+            <a class="btn btn-outline-primary me-2" th:href="@{/login}">로그인</a>
+            <a class="btn btn-primary" th:href="@{/signup}">회원가입</a>
+        </div>
+    </div>
+</nav>
+
+<!-- 소개 섹션 -->
+<div class="container mt-5">
+    <div class="hero shadow">
+        <h1>소비 습관을 스마트하게!</h1>
+        <p class="mt-3">Smart Spending은 당신의 수입과 지출을 쉽고 시각적으로 관리할 수 있는<br>
+            똑똑한 가계부 웹 서비스입니다.</p>
+    </div>
+
+    <!-- 간략 기능 소개 -->
+    <div class="row text-center mt-5">
+        <div class="col-md-4 mb-4">
+            <img src="https://cdn-icons-png.flaticon.com/512/2904/2904976.png" alt="수입/지출" width="80">
+            <h5 class="mt-3">수입·지출 기록</h5>
+            <p>하루하루의 소비 내역을 손쉽게 입력하고, 내역별 통계를 확인하세요.</p>
+        </div>
+        <div class="col-md-4 mb-4">
+            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="예산" width="80">
+            <h5 class="mt-3">월간 예산 설정</h5>
+            <p>한 달의 예산을 설정하고 계획에 맞는 소비를 이어가보세요.</p>
+        </div>
+        <div class="col-md-4 mb-4">
+            <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" alt="차트" width="80">
+            <h5 class="mt-3">차트로 시각화</h5>
+            <p>수입/지출을 그래프로 한눈에 파악할 수 있어 더 똑똑한 소비가 가능합니다.</p>
+        </div>
+    </div>
+</div>
+
+<!-- 푸터 -->
+<footer class="bg-white border-top mt-5 py-3 text-center">
+    <span class="text-muted">© 2025 Smart Spending</span>
+</footer>
+
+</body>
+</html>

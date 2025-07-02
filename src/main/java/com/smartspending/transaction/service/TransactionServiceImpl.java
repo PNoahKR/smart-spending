@@ -4,6 +4,7 @@ import com.smartspending.category.entity.Category;
 import com.smartspending.category.repository.CategoryRepository;
 import com.smartspending.common.exception.CommonResponseCode;
 import com.smartspending.common.exception.CustomException;
+import com.smartspending.common.response.PageInfoResponseDto;
 import com.smartspending.transaction.dto.request.TransactionRequestDto;
 import com.smartspending.transaction.dto.request.TransactionUpdateDto;
 import com.smartspending.transaction.dto.response.TransactionResponseDto;
@@ -12,8 +13,11 @@ import com.smartspending.transaction.repository.TransactionRepository;
 import com.smartspending.user.entity.User;
 import com.smartspending.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Service
 @Transactional(readOnly = true)
@@ -23,6 +27,11 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+
+    @Override
+    public PageInfoResponseDto<TransactionResponseDto> getTransactions(Long userId, LocalDate from, LocalDate to, Pageable pageable) {
+        return transactionRepository.findByUserIdAndDateBetween(userId, from, to, pageable);
+    }
 
     @Override
     @Transactional

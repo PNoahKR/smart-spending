@@ -2,6 +2,7 @@ package com.smartspending.category.service;
 
 import com.smartspending.category.dto.request.CategoryRequestDto;
 import com.smartspending.category.dto.request.CategoryUpdateDto;
+import com.smartspending.category.dto.response.CategoryResponseDto;
 import com.smartspending.category.entity.Category;
 import com.smartspending.category.repository.CategoryRepository;
 import com.smartspending.common.exception.CommonResponseCode;
@@ -12,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -19,6 +23,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+
+    @Override
+    public List<CategoryResponseDto> getList(Long userId) {
+        return categoryRepository.findByUserId(userId)
+                .stream()
+                .map(CategoryResponseDto::from)
+                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional

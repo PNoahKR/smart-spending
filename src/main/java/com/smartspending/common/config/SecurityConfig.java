@@ -68,14 +68,16 @@ public class SecurityConfig {
                         authorizeRequests
                                 .requestMatchers(PathRequest.toH2Console()).permitAll()
                                 .requestMatchers(
-                                        "/",
-                                        "/user/login/**",
-                                        "/user/logout/**",
-                                        "/user/register/**",
-                                        "/user/findPassword/**").permitAll()
+                                        "/", "/login", "/signup", "/dashboard", "/find-password", "/transaction", "/budget",    // 👉 HTML 화면들
+                                        "/user/login/**", "/user/logout/**",
+                                        "/user/register/**", "/user/find-password/**",  // 패스워드 경로 소문자 일관
+                                        "/oauth2/**",                                   // 소셜 로그인 콜백
+                                        "/css/**", "/js/**", "/images/**", "/favicon.ico"
+                                ).permitAll()
                                 .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login")
                         .successHandler(oAuth2SuccessHandler)
                         .failureHandler(oAuth2FailHandler)
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig

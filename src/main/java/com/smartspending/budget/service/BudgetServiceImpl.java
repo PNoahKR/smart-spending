@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,6 +24,14 @@ public class BudgetServiceImpl implements BudgetService {
 
     private final BudgetRepository budgetRepository;
     private final UserRepository userRepository;
+
+
+    @Override
+    public List<BudgetResponseDto> getBudgets(Long userId) {
+        return budgetRepository.findByUserId(userId).stream()
+                .map(BudgetResponseDto::new)
+                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional
@@ -54,7 +64,7 @@ public class BudgetServiceImpl implements BudgetService {
         boolean mainBudget = requestDto.isMainBudget();
 
         if (mainBudget) {
-            budgetRepository.findByMainBudgetTrueAndUserId(userId).ifPresent(budget -> budget.updateMainBudget(false));
+            budgetRepository.findByUserIdAndMainBudgetTrue(userId).ifPresent(budget -> budget.updateMainBudget(false));
         }
 
         Budget budget = Budget.builder()
@@ -106,7 +116,7 @@ public class BudgetServiceImpl implements BudgetService {
 
         if (requestDto.isMainBudget() != budget.isMainBudget()) {
             if (requestDto.isMainBudget()) {
-                budgetRepository.findByMainBudgetTrueAndUserId(userId).ifPresent(b -> b.updateMainBudget(false));
+                budgetRepository.findByUserIdAndMainBudgetTrue(userId).ifPresent(b -> b.updateMainBudget(false));
                 budget.updateMainBudget(requestDto.isMainBudget());
             }
             budget.updateMainBudget(requestDto.isMainBudget());
